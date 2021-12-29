@@ -140,7 +140,7 @@ public class PdfService {
                 "            <tr>\n" +
                 "                <td>Официальный сайт</td>\n" +
                 "                <td>Kapitalbank.uz</td>\n" +
-                "            </tr>\n" +                
+                "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>Единая информационная служба</td>\n" +
                 "                <td>(+998 71) 200-15-15</td>\n" +
