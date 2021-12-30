@@ -501,11 +501,9 @@
             if(val.split(',').length){
                 var value =  parseFloat($(this).prop("value").replace(',','.'));
                 //   $('#insurance_percent').prop('value', ((parseInt($input.val()))*1.25*(value/100)/12*$input_length.val()).toFixed(2));
-                
             }
             //   else
                 //  $('#insurance_percent').prop('value', ((parseInt($input.val()))*1.25*($('#insuranceRate').val()/100)/12*$input_length.val()).toFixed(2));
-
                 // if(!val){
                 // $('#insurance_percent').prop('value', '-');
                 // }
