@@ -14,6 +14,7 @@
     $LOAN_PERCENT = htmlspecialchars($_REQUEST['LOAN_PERCENT'])/100;
     $percent = (float)$_REQUEST['percent'];
     $collateral_type_id = (int)$_REQUEST['collateralTypeId'];
+
     if($collateral_type_id==1){
         $insurancePercent = 60;
     }
@@ -24,7 +25,7 @@
 
 <?php
     // $LOAN_AMOUNT = (int)345000000;
-    //$LOAN_LENGTH = (int)120;
+    // $LOAN_LENGTH = (int)120;
     // $LOAN_PERCENT = (float)0.18;
     function PMT($interest,$num_of_payments,$PV,$FV = 0.00, $Type = 0){
         $xp=pow((1+$interest),$num_of_payments);
@@ -79,7 +80,6 @@
     $XIRR_dates = array();
     array_push($XIRR_values, $payment_amount);
     array_push($XIRR_dates, $date->getTimestamp());
-
 ?>
 <!--<h4><?=GetMessage('CREDIT_AMOUNT')?></h4>-->
 <div class="modal fade" id="myModalCreditDetail" tabindex="-1" role="dialog" aria-labelledby="myModalCreditDetailLabel">
@@ -148,7 +148,6 @@
                                     }
 
                                 }
-
                                 $c_prev = $c23;
                                 $d_prev = $d23;
                                 $itogo_d = $itogo_d + $d23;
@@ -157,17 +156,14 @@
 
                                 // echo $date->format('d.m.Y') .' -prev:  '. $prev_date->format('d.m.Y').' - '.$credit_date ."<br>\n";
                                 // echo $date->format('d.m.Y') .' => '. number_format($c23,2,'.',' '). ' => '. number_format($d23,2,'.',' '). ' => '. number_format($e23,2,'.',' ').' => '.number_format($f23,2,'.',' '). ' => ' .$credit_date."<br>\n";
-
                                 $prev_date = $date;
-
-
                                 // echo $date->format('d.m.Y') .' -prev:  '. $prev_date->format('d.m.Y').' - '.$credit_date ."<br>\n";
                                 // echo $date->format('d.m.Y') .' => '. number_format($c23,2,'.',' '). ' => '. number_format($d23,2,'.',' '). ' => '. number_format($e23,2,'.',' ').' => '.number_format($f23,2,'.',' '). ' => ' .$credit_date."<br>\n";
-
                                 $prev_date = $date;
 
                                 array_push($XIRR_values, $f23);
                                 array_push($XIRR_dates, $date->getTimestamp());
+
                                 echo('
                                     <tr>
                                     <td>'.$i.'</td>
@@ -179,12 +175,9 @@
                                     <td>'.$credit_date.'</td>
                                     </tr>
                                 ');
-
-
                             }
                             // echo '<br>';
                             // echo('Итого D: '.number_format($itogo_d,2,'.',' ').' - Итого E: '.number_format($itogo_e,2,'.',' ').' - Итого F: '.number_format($itogo_f, 2, '.',' '));
-
                             // var_dump($XIRR_values);
                             // echo '<br>';
                             // var_dump($XIRR_dates);
@@ -252,7 +245,7 @@
                 collateralType: "Вид обеспечения",
                 calcText: 'Рассчитайте ваш кредит',
                 creditTerm: "Срок кредита",
-                acquiredProperty: "Залог приобретаемого транспортного средства + полис риска непогашения кредита",
+                acquiredProperty: "Транспортное средство + полис риска непогашения",
                 annuity: "Аннуитетный",
                 borrowerPayments: "Платежи заемщика связанные с получением кредита",
                 propertyValuationCost: "Стоимость оценки имущества",
@@ -283,7 +276,7 @@
                 otherPaid: "Другие платные услуги нотариуса",
                 realEstatePledge: "Залог недвижимого имущества",
                 pledgeOfCars: "Залог легковых автотранспортных средств",
-                cashDeposit: "депозит денежных средств",
+                cashDeposit: "Депозит денежных средств",
                 model: "Модель",
                 makeRequest: "Оформить заявку",
 
@@ -412,28 +405,30 @@
                     <input type="text" id="amount_of_credit_input" name="initial_fee" class="form-control" readonly="">\
                 </div>\
                 <div class="row">\
-                <div class="col-sm-6">\
-                    <div class="form-group form-group-lg">\
-                        <label for="form-field-4" class="h4">'+langData.get(lang).loanInterestRate+':</label>\
-                        <!--<p class="help-block"></p>-->\
-                        <input type="text" name="LOAN_PERCENT" id="loan_percent_input" class="form-control" value="23.00" readonly="">\
+                    <div class="col-sm-6">\
+                        <div class="form-group form-group-lg">\
+                            <label for="form-field-4" class="h4">'+langData.get(lang).loanInterestRate+':</label>\
+                            <!--<p class="help-block"></p>-->\
+                            <input type="text" name="LOAN_PERCENT" id="loan_percent_input" class="form-control" value="23.00" readonly="">\
+                        </div>\
+                    </div>\
+                    <div class="col-sm-6">\
+                        <div class="form-group form-group-lg">\
+                            <label for="form-field-4" class="h4">'+langData.get(lang).loanRepaymentMethod+':</label>\
+                            <input type="text" name="LOAN_PERCENT"  class="form-control" value="'+langData.get(lang).annuity+'" readonly="">\
+                        </div>\
                     </div>\
                 </div>\
-                <div class="col-sm-6">\
-                    <div class="form-group form-group-lg">\
-                        <label for="form-field-4" class="h4">'+langData.get(lang).loanRepaymentMethod+':</label>\
-                        <input type="text" name="LOAN_PERCENT"  class="form-control" value="'+langData.get(lang).annuity+'" readonly="">\
+                <div class="row">\
+                    <div class="col-sm-12">\
+                        <div class="form-group form-group-lg">\
+                            <label for="form-field-4" class="h4">'+langData.get(lang).collateralType+':</label>\
+                            <select id="collateralTypeId" class="form-control">\
+                                <option value="1">'+langData.get(lang).acquiredProperty+'</option>\
+                                <option value="2">'+langData.get(lang).cashDeposit+'</option>\
+                            </select>\
+                        </div>\
                     </div>\
-                </div>\
-                <div class="col-sm-6">\
-                    <div class="form-group form-group-lg">\
-                        <label for="form-field-4" class="h4">'+langData.get(lang).collateralType+':</label>\
-                        <select id="collateralTypeId" class="form-control">\
-                            <option value="1">'+langData.get(lang).acquiredProperty+'</option>\
-                            <option value="2">'+langData.get(lang).cashDeposit+'</option>\
-                        </select>\
-                    </div>\
-                </div>\
                 </div>\
                 <div class="form-group form-group-lg is-empty">\
                 <label for="form-field-1">'+langData.get(lang).creditTerm+':</label>\
@@ -512,7 +507,7 @@
             var instance_length;
 
             var min = 5000000;
-            var max = 270000000;
+            var max = 500000000;
             var min_fee = 1000000;
             var max_fee = 700000000;
 
@@ -528,9 +523,16 @@
                 else if(parseInt($(this).val())==2){
                     // $('#mortgageInsuranceRate').val('-').attr('readonly', '');
                     $('#insurance_percent').val('-').attr('readonly', '');
-
                 }
             });
+
+            const getFee = (data) => Math.round(data * 0.02);
+            const updateFee = (data) => instance_fee.update({ from: getFee(data) });
+            const clearData = () => {
+                $('.js-monthly-payment').html('...');
+                $('.modal-body').empty()
+                $('#pdf').remove();
+            };
 
             $range.ionRangeSlider({
                 skin: "round",
@@ -538,37 +540,39 @@
                 step: 1,
                 min: min,
                 max: max,
-                from: 50000000,
+                from: min,
                 grid: true,
                 onStart: function(data) {
                     $input.prop("value", data.from);
-                    min_fee = Math.round(data.from * 0.6);
 
-                    // instance_fee.update({
-                    //     min: data.from*0.3
-                    // });
+                    // updateFee(data.from);
+                    console.log('onStart instance_fee = ', instance_fee);
                 },
                 onChange: function(data) {
                     $input.prop("value", data.from);
 
-                    if($('#model').val()==1){
-                        instance_fee.update({
-                            min: Math.round(data.from*0.6)
-                        });
-                    }
-                    else{
-                        instance_fee.update({
-                            min: Math.round(data.from*0.6)
-                        });
-                    }
+                    // if($('#model').val()==1){
+                    //     instance_fee.update({
+                    //         min: Math.round(data.from*0.6)
+                    //     });
+                    // }
+                    // else{
+                    //     instance_fee.update({
+                    //         min: Math.round(data.from*0.6)
+                    //     });
+                    // }
 
-                    if(data.from<$input_fee.val()){
+                    console.log('onChange instance_fee = ', instance_fee);
+
+                    updateFee(data.from);
+
+                    if(data.from < $input_fee.val()){
                         instance_fee.update({
                             from: data.from
                         });
                         $input_fee.prop("value", data.from);
                     }
-                    else if(data.from>parseInt($input_fee.val())+300000000){
+                    else if(data.from > parseInt($input_fee.val()) + 300000000){
                         //console.log('test')
                         instance_fee.update({
                             from: data.from - 300000000
@@ -586,9 +590,8 @@
 
                     if($('#collateralTypeId').val()==1)
                         $input_insurance_percent.prop('value', Math.round((data.from - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-                    $('.js-monthly-payment').html('...');
-                    $('.modal-body').empty()
-                    $('#pdf').remove();
+
+                    clearData();
                 }
             });
 
@@ -653,9 +656,7 @@
                 if($('#collateralTypeId').val()==1)
                     $input_insurance_percent.prop('value', Math.round((val - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
 
-                $('.js-monthly-payment').html('...');
-                $('.modal-body').empty()
-                $('#pdf').remove();
+                clearData();
             });
 
             $range_fee.ionRangeSlider({
@@ -686,9 +687,7 @@
                     $input_amount_of_credit.prop("value", ($input.val() - data.from).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
                     if($('#collateralTypeId').val()==1)
                         $input_insurance_percent.prop('value', Math.round(($input.val() - data.from)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-                    $('.js-monthly-payment').html('...');
-                    $('.modal-body').empty()
-                    $('#pdf').remove();
+                    clearData();
                 }
             });
 
@@ -697,9 +696,8 @@
             if($('#collateralTypeId').val()==1)
                 $input_insurance_percent.prop('value', Math.round(($input.val() - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
 
-            $('.js-monthly-payment').html('...');
-            $('.modal-body').empty()
-            $('#pdf').remove();
+            clearData();
+
             instance_fee = $range_fee.data("ionRangeSlider");
 
             $input_fee.on("input", function() {
@@ -730,9 +728,7 @@
                 if($('#collateralTypeId').val()==1)
                     $input_insurance_percent.prop('value', Math.round(($input.val() - val)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
 
-                $('.js-monthly-payment').html('...');
-                $('.modal-body').empty()
-                $('#pdf').remove();
+                clearData();
             });
 
 
@@ -763,9 +759,8 @@
                     $input_length.prop("value", data.from);
                     if($('#collateralTypeId').val()==1)
                         $input_insurance_percent.prop('value', Math.round(($input.val() - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*data.from).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-                    $('.js-monthly-payment').html('...');
-                    $('#pdf').remove();
-                    $('.modal-body').empty()
+
+                    clearData();
                 }
             });
 
@@ -782,13 +777,11 @@
                 }
 
                 instance_length.update({
-                from: val
+                    from: val
                 });
                 if($('#collateralTypeId').val()==1)
                     $input_insurance_percent.prop('value', Math.round(($input.val() - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*val).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-                $('.js-monthly-payment').html('...');
-                $('#pdf').remove();
-                $('.modal-body').empty()
+                clearData();
             });
 
             $('#model').change(function(){
