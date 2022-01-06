@@ -24,7 +24,7 @@
 ?>
 
 <?php
-    // $LOAN_AMOUNT = (int)345000000;
+    // $LOAN_AMOUNT = (int)345000000; // 
     // $LOAN_LENGTH = (int)120;
     // $LOAN_PERCENT = (float)0.18;
     function PMT($interest,$num_of_payments,$PV,$FV = 0.00, $Type = 0){
@@ -383,7 +383,7 @@
                         <input type="text" id="loan_amount_id" class="js-range-slider" name="my_range" value="" />\
                     </div>\
                     <div class="col-sm-3">\
-                        <input type="text" id="loan_amount_input" name="LOAN_AMOUNT" class="form-control">\
+                        <input type="text" id="loan_amount_input" readonly name="LOAN_AMOUNT" class="form-control">\
                     </div>\
                 </div>\
                 </div>\
@@ -395,7 +395,7 @@
                         <input type="text" id="initial_fee_id" class="js-range-slider" name="my_range" value="" />\
                     </div>\
                     <div class="col-sm-3">\
-                        <input type="text" id="initial_fee_input" name="initial_fee" class="form-control">\
+                        <input type="text" id="initial_fee_input" readonly name="initial_fee" class="form-control">\
                     </div>\
                 </div>\
                 </div>\
@@ -526,14 +526,30 @@
                 }
             });
 
-            const getFee = (data) => Math.round(data * 0.02);
-            const updateFee = (data) => instance_fee.update({ from: getFee(data) });
+            const FEE_PERCENT = 0.02;
+
+            const getFee = (data) => Math.round(data * FEE_PERCENT);
+
+            const updateFee = (data) => {
+                const feeData = getFee(data);
+                $input_fee.prop("value", feeData);
+                $input_amount_of_credit.prop("value", (data - feeData).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+                instance_fee.update({ from: feeData });
+            }
+
+            const updateAmount = (feeData) => {
+                console.log('update = ', feeData);
+                console.log('inputProp = ', $input.prop("value"));
+                $input_amount_of_credit.prop("value", ($input.prop("value") - feeData).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+            }
+
             const clearData = () => {
                 $('.js-monthly-payment').html('...');
                 $('.modal-body').empty()
                 $('#pdf').remove();
             };
 
+            //  Стоимость Автомобиля:
             $range.ionRangeSlider({
                 skin: "round",
                 type: "single",
@@ -544,9 +560,6 @@
                 grid: true,
                 onStart: function(data) {
                     $input.prop("value", data.from);
-
-                    // updateFee(data.from);
-                    console.log('onStart instance_fee = ', instance_fee);
                 },
                 onChange: function(data) {
                     $input.prop("value", data.from);
@@ -562,34 +575,36 @@
                     //     });
                     // }
 
-                    console.log('onChange instance_fee = ', instance_fee);
+                    // console.log('onChange instance_fee = ', instance_fee);
 
                     updateFee(data.from);
 
-                    if(data.from < $input_fee.val()){
-                        instance_fee.update({
-                            from: data.from
-                        });
-                        $input_fee.prop("value", data.from);
-                    }
-                    else if(data.from > parseInt($input_fee.val()) + 300000000){
-                        //console.log('test')
-                        instance_fee.update({
-                            from: data.from - 300000000
-                        });
-                        $input_fee.prop("value", data.from - 300000000);
-                    }
+                    // if(data.from < $input_fee.val()){
+                    //     instance_fee.update({
+                    //         from: data.from
+                    //     });
+                    //     $input_fee.prop("value", data.from);
+                    // }
+                    // else if(data.from > parseInt($input_fee.val()) + 300000000){
+                    //     //console.log('test')
+                    //     instance_fee.update({
+                    //         from: data.from - 300000000
+                    //     });
+                    //     $input_fee.prop("value", data.from - 300000000);
+                    // }
 
-                    if($('#model').val()==1){
-                        min_fee = Math.round(data.from * 0.6);
-                    }
-                    else{
-                        min_fee = Math.round(data.from * 0.6);
-                    }
-                    $input_amount_of_credit.prop("value", (data.from - $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+                    // console.log('MODEL VAL = ', $('#model').val());
 
-                    if($('#collateralTypeId').val()==1)
-                        $input_insurance_percent.prop('value', Math.round((data.from - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+                    // if($('#model').val()==1){
+                    //     min_fee = Math.round(data.from * 0.6);
+                    // }
+                    // else{
+                    //     min_fee = Math.round(data.from * 0.6);
+                    // }
+                    // $input_amount_of_credit.prop("value", (data.from - $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+
+                    // if($('#collateralTypeId').val()==1)
+                    //     $input_insurance_percent.prop('value', Math.round((data.from - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
 
                     clearData();
                 }
@@ -603,90 +618,101 @@
                     $input_insurance_percent.prop('value', Math.round(($input_amount_of_credit.val().replace(/\s/g, ''))*1.2*val/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
             });
 
-            $input.on("input", function() {
-                var val = $(this).prop("value");
+            // $input.on("input", function() {
+            //     var val = $(this).prop("value");
+            //     console.log('onINPUT = ', val);
 
-                // validate
-                if (val < min) {
-                    val = min;
-                } else if (val > max) {
-                    val = max;
-                }
+            //     // validate
+            //     if (val < min) {
+            //         val = min;
+            //     } else if (val > max) {
+            //         val = max;
+            //     }
 
-                instance.update({
-                    from: val
-                });
+            //     instance.update({
+            //         from: val
+            //     });
 
-                if($('#model').val()==1){
-                    instance_fee.update({
-                        min: Math.round(val*0.6)
-                    });
-                    min_fee = Math.round(val* 0.6);
-                }
-                else{
-                    instance_fee.update({
-                        min: Math.round(val*0.6)
-                    });
-                    min_fee = Math.round(val* 0.6);
-                }
+            //     if($('#model').val()==1){
+            //         instance_fee.update({
+            //             min: Math.round(val*0.6)
+            //         });
+            //         min_fee = Math.round(val* 0.6);
+            //     }
+            //     else{
+            //         instance_fee.update({
+            //             min: Math.round(val*0.6)
+            //         });
+            //         min_fee = Math.round(val* 0.6);
+            //     }
 
-                // //console.log(val, ' - ', $input_fee.val())
-                if(parseInt(val)<parseInt($input_fee.val())){
-                    instance_fee.update({
-                        from: val
-                    });
-                    $input_fee.prop("value", val);
-                }
-                else if(parseInt(val)>parseInt($input_fee.val())+300000000){
-                    //console.log('test')
-                    instance_fee.update({
-                        from: parseInt(val) - 300000000
-                    });
-                    $input_fee.prop("value", parseInt(val) - 300000000);
-                }else{
-                    if($('#model').val()==1){
-                        $input_fee.prop("value", parseInt(val*0.6));
-                    }
-                    else{
-                        $input_fee.prop("value", parseInt(val*0.6));
-                    }
-                }
+            //     // //console.log(val, ' - ', $input_fee.val())
+            //     if(parseInt(val)<parseInt($input_fee.val())){
+            //         instance_fee.update({
+            //             from: val
+            //         });
+            //         $input_fee.prop("value", val);
+            //     }
+            //     else if(parseInt(val)>parseInt($input_fee.val())+300000000){
+            //         //console.log('test')
+            //         instance_fee.update({
+            //             from: parseInt(val) - 300000000
+            //         });
+            //         $input_fee.prop("value", parseInt(val) - 300000000);
+            //     }else{
+            //         if($('#model').val()==1){
+            //             $input_fee.prop("value", parseInt(val*0.6));
+            //         }
+            //         else{
+            //             $input_fee.prop("value", parseInt(val*0.6));
+            //         }
+            //     }
 
-                $input_amount_of_credit.prop("value", (val -  $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
-                if($('#collateralTypeId').val()==1)
-                    $input_insurance_percent.prop('value', Math.round((val - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+            //     $input_amount_of_credit.prop("value", (val -  $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
+            //     if($('#collateralTypeId').val()==1)
+            //         $input_insurance_percent.prop('value', Math.round((val - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
 
-                clearData();
-            });
+            //     clearData();
+            // });
 
+            console.log('min_fee = ', min_fee);
+
+            // Первоначальный взнос: 
             $range_fee.ionRangeSlider({
                 skin: "round",
                 type: "single",
                 min: min_fee,
                 max: max_fee,
-                from: 50000000,
+                // from: 50000000,
+                from: min_fee,
                 grid: true,
                 onStart: function(data) {
                     $input_fee.prop("value", data.from);
                 },
                 onChange: function(data) {
+                    console.log('onChange FEE = ', data);
                     $input_fee.prop("value", data.from);
-                    if(parseInt(data.from)>parseInt($input.val())){
-                        instance.update({
-                            from: data.from
-                        });
-                        $input.prop("value", data.from);
-                    }
-                    else if(parseInt(data.from)<parseInt($input.val())-300000000){
-                        //console.log('test')
-                        instance.update({
-                            from: parseInt(data.from) + 300000000
-                        });
-                        $input.prop("value", parseInt(data.from) + 300000000);
-                    }
-                    $input_amount_of_credit.prop("value", ($input.val() - data.from).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
-                    if($('#collateralTypeId').val()==1)
-                        $input_insurance_percent.prop('value', Math.round(($input.val() - data.from)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+
+                    updateAmount(data.from);
+
+                    // if(parseInt(data.from)>parseInt($input.val())){
+                    //     instance.update({
+                    //         from: data.from
+                    //     });
+                    //     $input.prop("value", data.from);
+                    // }
+                    // else if(parseInt(data.from)<parseInt($input.val())-300000000){
+                    //     //console.log('test')
+                    //     instance.update({
+                    //         from: parseInt(data.from) + 300000000
+                    //     });
+                    //     $input.prop("value", parseInt(data.from) + 300000000);
+                    // }
+                    // $input_amount_of_credit.prop("value", ($input.val() - data.from).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
+
+                    // if($('#collateralTypeId').val()==1)
+                    //     $input_insurance_percent.prop('value', Math.round(($input.val() - data.from)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+
                     clearData();
                 }
             });
@@ -701,6 +727,7 @@
             instance_fee = $range_fee.data("ionRangeSlider");
 
             $input_fee.on("input", function() {
+                console.log( 'FEE on INPUT, = ', $(this).prop("value") );
                 var val = $(this).prop("value");
                 //console.log(val, ' - ', )
 
@@ -732,17 +759,17 @@
             });
 
 
-            $input_amount_of_credit.on("input", function() {
-                var val = $(this).prop("value");
-                //console.log('test')
+            // $input_amount_of_credit.on("input", function() {
+            //     var val = $(this).prop("value");
+            //     //console.log('test')
 
-                // validate
-                if (val < min) {
-                    val = min;
-                } else if (val > max) {
-                    val = max;
-                }
-            });
+            //     // validate
+            //     if (val < min) {
+            //         val = min;
+            //     } else if (val > max) {
+            //         val = max;
+            //     }
+            // });
 
 
             $range_length.ionRangeSlider({
