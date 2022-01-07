@@ -509,7 +509,7 @@
             var min = 5000000;
             var max = 500000000;
             var min_fee = 1000000;
-            var max_fee = 700000000;
+            var max_fee = 500000000;
 
             var min_length = 12;
             var max_length = 60;
@@ -534,7 +534,11 @@
                 const feeData = getFee(data);
                 $input_fee.prop("value", feeData);
                 $input_amount_of_credit.prop("value", (data - feeData).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-                instance_fee.update({ from: feeData });
+                instance_fee.update({ 
+                    from: feeData,
+                    min: feeData,
+                    max: data
+                });
             }
 
             const updateAmount = (feeData) => {
