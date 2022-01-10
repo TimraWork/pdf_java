@@ -94,7 +94,7 @@
                     <thead>
                         <tr>
                             <th>№</th>
-                            <th><?=GetMessage('PC_DATE')?></th>
+                            <!--<th><?=GetMessage('PC_DATE')?></th>-->
                             <th><?=GetMessage('PC_CREDIT_BALANCE')?></th>
                             <th><?=GetMessage('PC_AMOUNT_LOAN_REPAYMENT')?></th>
                             <th><?=GetMessage('PC_AMOUNT_INTEREST_LOAN')?></th>
@@ -146,7 +146,6 @@
                                         $f23 = $iMonthlyPayment;
                                         $d23 = abs($f23) - $e23;
                                     }
-
                                 }
                                 $c_prev = $c23;
                                 $d_prev = $d23;
@@ -167,7 +166,6 @@
                                 echo('
                                     <tr>
                                     <td>'.$i.'</td>
-                                    <td>'.$date->format('d.m.Y').'</td>
                                     <td>'.number_format($c23,2,'.',' ').'</td>
                                     <td>'.number_format($d23,2,'.',' ').'</td>
                                     <td>'.number_format($e23,2,'.',' ').'</td>
@@ -208,7 +206,7 @@
                     <tbody>
                         <tr>
                             <td><?=GetMessage('PC_PSK_PERCENT')?></td>
-                            <td id="psk"><?=$XIRR_FORMAT?>%</td>
+                            <td id="psk"><?=$XIRR_FORMAT?>%</td> <!--ЭТОТ ПРОЦЕНТ НЕ СХОДИТСЯ В попапе В КОНЦЕ ТАБЛИЦЕ-->
                         </tr>
                         <tr>
                             <td><?=GetMessage('PC_PAYMENTS_ON_PRINCIPAL')?></td>
@@ -383,7 +381,7 @@
                         <input type="text" id="loan_amount_id" class="js-range-slider" name="my_range" value="" />\
                     </div>\
                     <div class="col-sm-3">\
-                        <input type="text" id="loan_amount_input" readonly name="LOAN_AMOUNT" class="form-control">\
+                        <input type="text" id="loan_amount_input" name="LOAN_AMOUNT" class="form-control" style="font-size: 16px !important; text-align: center;">\
                     </div>\
                 </div>\
                 </div>\
@@ -395,7 +393,7 @@
                         <input type="text" id="initial_fee_id" class="js-range-slider" name="my_range" value="" />\
                     </div>\
                     <div class="col-sm-3">\
-                        <input type="text" id="initial_fee_input" readonly name="initial_fee" class="form-control">\
+                        <input type="text" id="initial_fee_input" name="initial_fee" class="form-control" style="font-size: 16px !important; text-align: center;">\
                     </div>\
                 </div>\
                 </div>\
@@ -530,6 +528,12 @@
 
             const getFee = (data) => Math.round(data * FEE_PERCENT);
 
+            const clearData = () => {
+                $('.js-monthly-payment').html('...');
+                $('.modal-body').empty()
+                $('#pdf').remove();
+            };
+
             const updateFee = (data) => {
                 const feeData = getFee(data);
                 $input_fee.prop("value", feeData);
@@ -539,19 +543,13 @@
                     min: feeData,
                     max: data
                 });
+                clearData();
             }
 
             const updateAmount = (feeData) => {
-                console.log('update = ', feeData);
-                console.log('inputProp = ', $input.prop("value"));
                 $input_amount_of_credit.prop("value", ($input.prop("value") - feeData).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
+                clearData();
             }
-
-            const clearData = () => {
-                $('.js-monthly-payment').html('...');
-                $('.modal-body').empty()
-                $('#pdf').remove();
-            };
 
             //  Стоимость Автомобиля:
             $range.ionRangeSlider({
@@ -567,50 +565,7 @@
                 },
                 onChange: function(data) {
                     $input.prop("value", data.from);
-
-                    // if($('#model').val()==1){
-                    //     instance_fee.update({
-                    //         min: Math.round(data.from*0.6)
-                    //     });
-                    // }
-                    // else{
-                    //     instance_fee.update({
-                    //         min: Math.round(data.from*0.6)
-                    //     });
-                    // }
-
-                    // console.log('onChange instance_fee = ', instance_fee);
-
                     updateFee(data.from);
-
-                    // if(data.from < $input_fee.val()){
-                    //     instance_fee.update({
-                    //         from: data.from
-                    //     });
-                    //     $input_fee.prop("value", data.from);
-                    // }
-                    // else if(data.from > parseInt($input_fee.val()) + 300000000){
-                    //     //console.log('test')
-                    //     instance_fee.update({
-                    //         from: data.from - 300000000
-                    //     });
-                    //     $input_fee.prop("value", data.from - 300000000);
-                    // }
-
-                    // console.log('MODEL VAL = ', $('#model').val());
-
-                    // if($('#model').val()==1){
-                    //     min_fee = Math.round(data.from * 0.6);
-                    // }
-                    // else{
-                    //     min_fee = Math.round(data.from * 0.6);
-                    // }
-                    // $input_amount_of_credit.prop("value", (data.from - $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-
-                    // if($('#collateralTypeId').val()==1)
-                    //     $input_insurance_percent.prop('value', Math.round((data.from - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-
-                    clearData();
                 }
             });
 
@@ -622,64 +577,12 @@
                     $input_insurance_percent.prop('value', Math.round(($input_amount_of_credit.val().replace(/\s/g, ''))*1.2*val/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
             });
 
-            // $input.on("input", function() {
-            //     var val = $(this).prop("value");
-            //     console.log('onINPUT = ', val);
-
-            //     // validate
-            //     if (val < min) {
-            //         val = min;
-            //     } else if (val > max) {
-            //         val = max;
-            //     }
-
-            //     instance.update({
-            //         from: val
-            //     });
-
-            //     if($('#model').val()==1){
-            //         instance_fee.update({
-            //             min: Math.round(val*0.6)
-            //         });
-            //         min_fee = Math.round(val* 0.6);
-            //     }
-            //     else{
-            //         instance_fee.update({
-            //             min: Math.round(val*0.6)
-            //         });
-            //         min_fee = Math.round(val* 0.6);
-            //     }
-
-            //     // //console.log(val, ' - ', $input_fee.val())
-            //     if(parseInt(val)<parseInt($input_fee.val())){
-            //         instance_fee.update({
-            //             from: val
-            //         });
-            //         $input_fee.prop("value", val);
-            //     }
-            //     else if(parseInt(val)>parseInt($input_fee.val())+300000000){
-            //         //console.log('test')
-            //         instance_fee.update({
-            //             from: parseInt(val) - 300000000
-            //         });
-            //         $input_fee.prop("value", parseInt(val) - 300000000);
-            //     }else{
-            //         if($('#model').val()==1){
-            //             $input_fee.prop("value", parseInt(val*0.6));
-            //         }
-            //         else{
-            //             $input_fee.prop("value", parseInt(val*0.6));
-            //         }
-            //     }
-
-            //     $input_amount_of_credit.prop("value", (val -  $input_fee.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
-            //     if($('#collateralTypeId').val()==1)
-            //         $input_insurance_percent.prop('value', Math.round((val - $input_fee.val())*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-
-            //     clearData();
-            // });
-
-            console.log('min_fee = ', min_fee);
+            $input.on("input", function() {
+                var val = $(this).prop("value");
+                console.log('fromValue = ', val);
+                instance.update({ from: val });
+                updateFee(val);
+            });
 
             // Первоначальный взнос: 
             $range_fee.ionRangeSlider({
@@ -687,37 +590,14 @@
                 type: "single",
                 min: min_fee,
                 max: max_fee,
-                // from: 50000000,
                 from: min_fee,
                 grid: true,
                 onStart: function(data) {
                     $input_fee.prop("value", data.from);
                 },
                 onChange: function(data) {
-                    console.log('onChange FEE = ', data);
                     $input_fee.prop("value", data.from);
-
                     updateAmount(data.from);
-
-                    // if(parseInt(data.from)>parseInt($input.val())){
-                    //     instance.update({
-                    //         from: data.from
-                    //     });
-                    //     $input.prop("value", data.from);
-                    // }
-                    // else if(parseInt(data.from)<parseInt($input.val())-300000000){
-                    //     //console.log('test')
-                    //     instance.update({
-                    //         from: parseInt(data.from) + 300000000
-                    //     });
-                    //     $input.prop("value", parseInt(data.from) + 300000000);
-                    // }
-                    // $input_amount_of_credit.prop("value", ($input.val() - data.from).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
-
-                    // if($('#collateralTypeId').val()==1)
-                    //     $input_insurance_percent.prop('value', Math.round(($input.val() - data.from)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-
-                    clearData();
                 }
             });
 
@@ -731,50 +611,11 @@
             instance_fee = $range_fee.data("ionRangeSlider");
 
             $input_fee.on("input", function() {
-                console.log( 'FEE on INPUT, = ', $(this).prop("value") );
                 var val = $(this).prop("value");
-                //console.log(val, ' - ', )
-
-                // validate
-                instance_fee.update({
-                    from: val
-                });
-
-                //console.log(val, ' - ', )
-                if(parseInt(val)>parseInt($input.val())){
-                    instance.update({
-                        from: val
-                    });
-                    $input.prop("value", val);
-                }
-                else if(parseInt(val)<parseInt($input.val())-300000000){
-                    //console.log('test')
-                    instance.update({
-                        from: parseInt(val) + 300000000
-                    });
-                    $input.prop("value", parseInt(val) + 300000000);
-                }
-
-                $input_amount_of_credit.prop("value", ($input.val() - val).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}));
-                if($('#collateralTypeId').val()==1)
-                    $input_insurance_percent.prop('value', Math.round(($input.val() - val)*1.2*parseFloat($('#mortgageInsuranceRate').val())/1200*$input_length.val()).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}))
-
-                clearData();
+                console.log('toValue = ', val);
+                instance_fee.update({ from: val });
+                updateAmount(val);
             });
-
-
-            // $input_amount_of_credit.on("input", function() {
-            //     var val = $(this).prop("value");
-            //     //console.log('test')
-
-            //     // validate
-            //     if (val < min) {
-            //         val = min;
-            //     } else if (val > max) {
-            //         val = max;
-            //     }
-            // });
-
 
             $range_length.ionRangeSlider({
                 skin: "round",
@@ -851,7 +692,11 @@
                 }
             });
 
-            $('#calc').on('click', function(){
+            $('#calc').on('click', function(){ // К-ка "Рассчитать"
+                // data-amount="270000000" 
+                // data-term="60" 
+                // data-percent="23" 
+                // data-credit-name="Удобное авто / Удобная карта"
                 $('#myModalCreditOrder').attr({
                     'data-amount': $('#loan_amount_input').val(),
                     'data-term' : $('#loan_length_input').val(),
@@ -916,7 +761,7 @@
                         var additionAmount = 0 ;
 
                         $('#pdf').remove();
-                            $('#pdf-box').append('<a id="pdf" style="font-size: 18px; font-weight: bold; color: #222;" href="https://api.kapitalbank.uz/api/v1/pdf/getInformationSheet?amount='+parseInt($('#amount_of_credit_input').val().replace(/\s/g, '')).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' сум'+'&date='+date.split('-')[2] + '.' + date.split('-')[1] + '.' + date.split('-')[0] +'&mortgage=Потребительский кредит (приобретение нового автотранспортного средства, произведенного в Республике Узбекистан)&money='+ $('#money').text() + ' сум'+'&term='+ $('#loan_length_input').val()+'&rate='+$('#loan_percent_input').val()+'%25&cost='+$('#psk').text()+'25&singleAmount='+$('.js-monthly-payment').text() + ' сум'+'&commission=0.00 сум&propertyValuation1= 0,00 сум'+'&propertyValuation2=0,00 сум'+'&insuranceObject='+ insuranceObject.toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2})+' сум&stateDuty= 0,00 сум'+'&insuranceRisk='+insuranceRisk+' сум&others=0,00 сум&increasedAmount=34.50 процентов годовых&loanSecurity='+loanSec + ' '+ loanSecValue + ' сум'+'&additionAmount='+additionAmount.toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' сум'+'">Скачать информационный лист</a>');
+                        $('#pdf-box').append('<a id="pdf" style="font-size: 18px; font-weight: bold; color: #222;" href="https://api.kapitalbank.uz/api/v1/pdf/getInformationSheet?amount='+parseInt($('#amount_of_credit_input').val().replace(/\s/g, '')).toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' сум'+'&date='+date.split('-')[2] + '.' + date.split('-')[1] + '.' + date.split('-')[0] +'&mortgage=Потребительский кредит (приобретение нового автотранспортного средства, произведенного в Республике Узбекистан)&money='+ $('#money').text() + ' сум'+'&term='+ $('#loan_length_input').val()+'&rate='+$('#loan_percent_input').val()+'%25&cost='+$('#psk').text()+'25&singleAmount='+$('.js-monthly-payment').text() + ' сум'+'&commission=0.00 сум&propertyValuation1= 0,00 сум'+'&propertyValuation2=0,00 сум'+'&insuranceObject='+ insuranceObject.toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2})+' сум&stateDuty= 0,00 сум'+'&insuranceRisk='+insuranceRisk+' сум&others=0,00 сум&increasedAmount=34.50 процентов годовых&loanSecurity='+loanSec + ' '+ loanSecValue + ' сум'+'&additionAmount='+additionAmount.toLocaleString('us', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' сум'+'">Скачать информационный лист</a>');
                     }
                 }
             });
